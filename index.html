@@ -104,7 +104,7 @@ footer a:hover{text-decoration:underline;}
   <header>
     <div class="overline">Looper · Houston golf</div>
     <h1 class="poster">Startup roadmap</h1>
-    <p class="sub">From side project to company — five phases. Check things off, drag to reprioritize, add your own tasks. Progress saves in this browser.</p>
+    <p class="sub">From side project to company — five phases. Check things off, drag to reprioritize, add your own tasks. Progress saves in this browser; use Export / Import to move it between devices.</p>
     <div class="progress-card">
       <div class="pct" id="pct">0%</div>
       <div class="pgroup">
@@ -117,6 +117,9 @@ footer a:hover{text-decoration:underline;}
         <button id="f-all" class="on">All</button><button id="f-todo">To-do</button><button id="f-done">Done</button>
       </div>
       <span class="spacer"></span>
+      <button class="btn" id="exportb" title="Download your progress as a file">Export</button>
+      <button class="btn" id="importb" title="Load progress from an exported file">Import</button>
+      <input type="file" id="importf" accept="application/json,.json" style="display:none" />
       <button class="btn" id="themeb" aria-label="Toggle dark mode"></button>
       <button class="btn" id="resetb">Reset</button>
     </div>
@@ -280,6 +283,18 @@ let armT=null;
 document.getElementById('resetb').onclick=function(){
   if(this.dataset.armed){state={tasks:JSON.parse(JSON.stringify(SEED)),collapsed:{},filter:'all'};save();render();delete this.dataset.armed;this.textContent='Reset';}
   else{this.dataset.armed='1';this.textContent='Confirm reset?';clearTimeout(armT);armT=setTimeout(()=>{delete this.dataset.armed;this.textContent='Reset';},3000);}
+};
+document.getElementById('exportb').onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='looper-roadmap-progress.json';a.click();URL.revokeObjectURL(a.href);
+};
+const importf=document.getElementById('importf');
+document.getElementById('importb').onclick=()=>importf.click();
+importf.onchange=()=>{
+  const f=importf.files[0];if(!f)return;
+  f.text().then(tx=>{const s=JSON.parse(tx);if(s&&Array.isArray(s.tasks)){state=s;save();render();}else{alert('Not a roadmap progress file.');}}).catch(()=>alert('Could not read that file.'));
+  importf.value='';
 };
 render();
 </script>
