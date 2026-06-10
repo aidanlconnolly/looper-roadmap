@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Looper — Startup roadmap</title>
+<meta name="description" content="Interactive execution roadmap for turning Looper, a Houston golf super-app, into a startup. Five phases, checkable and draggable tasks, progress saved locally." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230071E3'/%3E%3Cpath d='M9 17l5 5 9-12' stroke='white' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F5F5F7; --surface:#FFFFFF; --text:#1D1D1F; --muted:#6E6E73; --faint:#98989D;
+  --hairline:#E2E2E6; --accent:#0071E3; --accent-soft:#E8F1FD; --done:#0071E3;
+  --chip-d-bg:#FDECEC; --chip-d-tx:#B3261E;
+  --chip-p0-bg:#E8F1FD; --chip-p0-tx:#0B57D0;
+  --chip-p1-bg:#E7F6EE; --chip-p1-tx:#0F6E56;
+  --chip-p2-bg:#FCF1E3; --chip-p2-tx:#8A5A00;
+  --chip-p3-bg:#F1F1F4; --chip-p3-tx:#6E6E73;
+  --gate-bg:#FCF6EA; --gate-tx:#8A5A00;
+}
+[data-theme="dark"]{
+  --bg:#131316; --surface:#1C1C1F; --text:#F5F5F7; --muted:#A1A1A6; --faint:#7C7C82;
+  --hairline:#2D2D31; --accent:#2997FF; --accent-soft:#12283D; --done:#2997FF;
+  --chip-d-bg:#3A1D1B; --chip-d-tx:#F0928B;
+  --chip-p0-bg:#12283D; --chip-p0-tx:#7FB8F0;
+  --chip-p1-bg:#10291F; --chip-p1-tx:#6FCFA5;
+  --chip-p2-bg:#322712; --chip-p2-tx:#E3B65E;
+  --chip-p3-bg:#26262A; --chip-p3-tx:#A1A1A6;
+  --gate-bg:#262114; --gate-tx:#E3B65E;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+main{max-width:780px;margin:0 auto;padding:48px 20px 80px;}
+.overline{font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;}
+h1.poster{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(42px,8vw,68px);line-height:.98;letter-spacing:.01em;margin:8px 0 14px;}
+.sub{color:var(--muted);max-width:560px;margin:0 0 28px;}
+.progress-card{background:var(--surface);border:1px solid var(--hairline);border-radius:16px;padding:20px 22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.pct{font-family:'Anton',sans-serif;font-size:40px;line-height:1;min-width:96px;}
+.pgroup{flex:1;min-width:220px;}
+.pcount{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.pbar{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;}
+.pfill{height:100%;width:0%;background:var(--done);border-radius:99px;transition:width .3s ease;}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0 30px;}
+.seg{display:flex;border:1px solid var(--hairline);border-radius:10px;overflow:hidden;background:var(--surface);}
+.seg button{border:none;background:transparent;color:var(--muted);font:inherit;font-size:13px;padding:7px 14px;cursor:pointer;}
+.seg button.on{background:var(--accent-soft);color:var(--accent);font-weight:500;}
+.btn{border:1px solid var(--hairline);background:var(--surface);color:var(--text);font:inherit;font-size:13px;padding:7px 13px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.btn:hover{border-color:var(--faint);}
+.btn:active{transform:scale(.98);}
+.spacer{flex:1;}
+.phase{background:var(--surface);border:1px solid var(--hairline);border-radius:16px;margin-bottom:18px;overflow:hidden;}
+.phead{display:flex;align-items:center;gap:10px;padding:15px 18px;cursor:pointer;user-select:none;}
+.phead:hover{background:color-mix(in srgb, var(--surface) 92%, var(--text) 8%);}
+.phead .chev{color:var(--faint);transition:transform .15s;display:flex;}
+.phead.closed .chev{transform:rotate(-90deg);}
+.pname{font-size:16px;font-weight:600;}
+.chip{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;white-space:nowrap;}
+.pdone{margin-left:auto;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums;}
+.plist{border-top:1px solid var(--hairline);}
+.task{display:flex;align-items:flex-start;gap:11px;padding:13px 18px 13px 10px;border-bottom:1px solid var(--hairline);background:var(--surface);}
+.task:last-child{border-bottom:none;}
+.task.dragging{opacity:.35;}
+.task.gate{background:var(--gate-bg);}
+.grip{color:var(--faint);opacity:0;cursor:grab;padding:2px 0 0 2px;display:flex;margin-top:2px;touch-action:none;}
+.task:hover .grip{opacity:1;}
+.nodrag .grip{display:none;}
+.cb{width:22px;height:22px;min-width:22px;border:1.5px solid var(--faint);border-radius:50%;background:transparent;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;color:#fff;margin-top:1px;}
+.cb.on{background:var(--done);border-color:var(--done);}
+.tmid{flex:1;min-width:0;}
+.tt{font-size:14.5px;font-weight:500;}
+.task.done .tt{text-decoration:line-through;color:var(--faint);font-weight:400;}
+.task.done .tm{color:var(--faint);}
+.tm{font-size:12.5px;color:var(--muted);margin-top:2px;}
+.tacts{display:flex;align-items:center;gap:2px;margin-top:1px;}
+.iconbtn{border:none;background:transparent;color:var(--faint);cursor:pointer;padding:4px;border-radius:8px;display:flex;}
+.iconbtn:hover{color:var(--text);background:var(--bg);}
+.del{opacity:0;}
+.task:hover .del{opacity:1;}
+.copybtn{border:1px solid var(--hairline);background:transparent;color:var(--muted);font:inherit;font-size:11.5px;padding:3px 9px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;margin-top:2px;}
+.copybtn:hover{color:var(--accent);border-color:var(--accent);}
+.copybtn.copied{color:var(--chip-p1-tx);border-color:var(--chip-p1-tx);}
+.gateflag{color:var(--gate-tx);display:inline-flex;vertical-align:-3px;margin-right:5px;}
+.addrow{display:flex;gap:8px;padding:11px 18px;border-top:1px solid var(--hairline);background:var(--surface);}
+.addrow input{flex:1;border:1px solid var(--hairline);background:var(--bg);color:var(--text);font:inherit;font-size:13px;padding:7px 12px;border-radius:10px;outline:none;}
+.addrow input:focus{border-color:var(--accent);}
+.empty{padding:14px 18px;font-size:13px;color:var(--faint);}
+footer{margin-top:44px;font-size:13px;color:var(--muted);text-align:center;}
+footer a{color:var(--accent);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+@media (max-width:560px){
+  main{padding:32px 14px 60px;}
+  .pct{font-size:32px;min-width:74px;}
+  .task{padding:12px 12px 12px 8px;}
+  .grip{opacity:.6;}
+  .del{opacity:.6;}
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="overline">Looper · Houston golf</div>
+    <h1 class="poster">Startup roadmap</h1>
+    <p class="sub">From side project to company — five phases. Check things off, drag to reprioritize, add your own tasks. Progress saves in this browser.</p>
+    <div class="progress-card">
+      <div class="pct" id="pct">0%</div>
+      <div class="pgroup">
+        <div class="pcount" id="pcount"></div>
+        <div class="pbar"><div class="pfill" id="pfill"></div></div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Filter tasks">
+        <button id="f-all" class="on">All</button><button id="f-todo">To-do</button><button id="f-done">Done</button>
+      </div>
+      <span class="spacer"></span>
+      <button class="btn" id="themeb" aria-label="Toggle dark mode"></button>
+      <button class="btn" id="resetb">Reset</button>
+    </div>
+  </header>
+  <div id="phases"></div>
+  <footer>
+    Execution view of <a href="https://github.com/aidanlconnolly/looper-golf/blob/main/docs/ROADMAP.md">docs/ROADMAP.md</a> in the looper-golf repo.
+    Tasks with a copy button include a ready-to-paste prompt for Claude Code.
+  </footer>
+</main>
+<script>
+const KEY='looper-roadmap-v1';
+const I={
+ check:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
+ grip:'<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="5" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg>',
+ x:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ plus:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+ flag:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a1 1 0 011-1h11l-2.5 4L17 12H6"/></svg>',
+ chev:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+ copy:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>',
+ sun:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+ moon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13A9 9 0 1111 3a7 7 0 0010 10z"/></svg>'
+};
+const PHASES=[
+ {id:'d', n:'Decide first', w:'this week', c:'d'},
+ {id:'p0',n:'Phase 0 — form + comply', w:'weeks 0–6', c:'p0'},
+ {id:'p1',n:'Phase 1 — Houston beta', w:'months 1–3', c:'p1'},
+ {id:'p2',n:'Phase 2 — partnerships + revenue', w:'months 3–6', c:'p2'},
+ {id:'p3',n:'Phase 3 — monetize + expand', w:'months 6–12', c:'p3'}
+];
+const SEED=[
+{id:'d1',ph:'d',t:'Pick the new name',m:'“Looper” collides with 3 live golf apps — shortlist 5, screen stores/USPTO/domains, attorney clearance $500–1.5k'},
+{id:'d2',ph:'d',t:'Lock the entity path: Texas LLC now',m:'$300 filing; flip to Delaware C-corp only at term-sheet time'},
+{id:'d3',ph:'d',t:'Commit to bootstrap-with-gates',m:'Raise conversations only after Houston metrics clear the Phase 2–3 gates'},
+{id:'a1',ph:'p0',t:'Buy domain for the new name',m:'~$20 · also needed for the Apple org work email'},
+{id:'a2',ph:'p0',t:'File TX LLC + EIN + business bank account',m:'$308 on SOSDirect · EIN free at irs.gov · Mercury/Relay $0'},
+{id:'a3',ph:'p0',t:'Apply for D-U-N-S number',m:'Free, ≤5 business days — it gates the Apple org account'},
+{id:'a4',ph:'p0',t:'Enroll Apple Developer organization',m:'$99/yr · needs entity + DUNS + domain email + public site'},
+{id:'a5',ph:'p0',t:'Register Google Play organization',m:'$25 once · org accounts skip the 12-tester/14-day gate'},
+{id:'a6',ph:'p0',t:'Build report / block / filter + contact info',m:'App Review hard blocker (Guideline 1.2) for messages, foursomes, reviews',p:'Build the App Store Guideline 1.2 compliance features in looper-golf: report, block, and content filtering plus published contact info, covering in-app messages, foursome posts, and coach reviews.'},
+{id:'a7',ph:'p0',t:'Build in-app account deletion',m:'App Review hard blocker (5.1.1(v))',p:'Build in-app account deletion in looper-golf per App Store guideline 5.1.1(v): delete the Supabase auth user, cascade owned rows, and handle the localStorage-only mode.'},
+{id:'a8',ph:'p0',t:'Privacy policy + ToS live on the domain',m:'Termly ~$14/mo · must cover UGC, push, location, marketplace'},
+{id:'a9',ph:'p0',t:'Wire Sentry + PostHog',m:'Free tiers — you cannot run a beta blind',p:'Add Sentry crash reporting and PostHog analytics to looper-golf (Expo web + native), instrumenting the four core funnels: browse→deep-link, alert→hit, match→message, foursome post→fill.'},
+{id:'a10',ph:'p0',t:'Kill demo-auth path in prod + schema + VAPID',m:'Fixes the silent-write-failure gap per ACTIVATION.md',p:'In looper-golf, disable the localStorage demo-user path in production when supabaseReady so RLS-gated writes can never silently fail, and verify Supabase auth end-to-end.'},
+{id:'a11',ph:'p0',t:'Vercel Pro → cron every 15 min',m:'$20/mo · verify a real cancellation alert push end-to-end'},
+{id:'a12',ph:'p0',t:'First EAS iOS build → TestFlight + Play closed track',m:'EAS free tier: 15 builds/mo, OTA to 1,000 MAU'},
+{id:'a13',ph:'p0',t:'Store listing: golf utility, never dating-adjacent',m:'Guideline 4.3(b) rejects new dating apps — position as partner coordination'},
+{id:'b1',ph:'p1',t:'Invite first 20 beta golfers + Houston Discord',m:'Personal network, course starters, golf group chats'},
+{id:'b2',ph:'p1',t:'Scale invites 20 → 50 → 200',m:'Weekly TestFlight builds + in-app feedback link'},
+{id:'b3',ph:'p1',t:'Matching v2: availability + skill band + vibe tags',m:'Availability overlap is the #1 practical matcher',p:'Build matching v2 in looper-golf Find-a-Friend: availability chips (weekday/weekend × AM/PM), handicap-band preference, and vibe tags, factored into mutual match ranking.'},
+{id:'b4',ph:'p1',t:'Reliability loop: post-round confirm + show-up rate',m:'The trust layer that kills these apps when missing',p:'Build the reliability loop in looper-golf: post-round “did you play / play again?” prompts, per-user show-up rate, a Reliable badge at 90%+ over 3+ rounds, and repeat-partner group suggestions.'},
+{id:'b5',ph:'p1',t:'Recruit 5–10 Houston coaches personally',m:'Seed marketplace supply by hand; book their first lessons yourself'},
+{id:'b6',ph:'p1',t:'Weekly “cheapest weekend tee times” data post',m:'Reddit, FB groups, Nextdoor — your price history is the content'},
+{id:'b7',ph:'p1',t:'First 10 SEO guides + Search Console',m:'Layers on the prerendered /c/ course pages already shipped'},
+{id:'b8',ph:'p1',t:'IG/TikTok founder course vlogs',m:'“Muni of the week” across the 24 courses; unpolished beats produced'},
+{id:'b9',ph:'p1',t:'Recruit 2–3 ambassadors',m:'Free Pro + small stipend; they host open foursomes + run Discord'},
+{id:'b10',ph:'p1',t:'Gate: 300 WAU · 25% wk-4 retention · 150 clickouts/wk',m:'Clear this before starting Phase 2 partnership pushes',g:1},
+{id:'c1',ph:'p2',t:'Apply to GolfNow affiliate / partner program',m:'The 18Birdies path to legit in-app booking — bring beta numbers'},
+{id:'c2',ph:'p2',t:'Apply to Lightspeed Golf integration partners',m:'The only fully public tee-sheet partner API'},
+{id:'c3',ph:'p2',t:'Intro to TenFore',m:'They now hold Memorial Park + Sharpstown — highest-leverage Houston door'},
+{id:'c4',ph:'p2',t:'Pilot 3–5 direct course deals',m:'Anti-barter pitch + monthly demand-data one-pager'},
+{id:'c5',ph:'p2',t:'Stripe Billing live for Pro',m:'$6/mo · $45/yr — benchmarked vs 18Birdies $99.99/yr',p:'Wire Stripe Billing into looper-golf for Looper Pro ($6/mo, $45/yr): checkout, webhook to Supabase entitlement, and gate unlimited alerts + instant push behind Pro.'},
+{id:'c6',ph:'p2',t:'Stripe Connect Express for coaches',m:'10–15% take ≈ $9–11 net per $80 lesson; no money custody',p:'Finish coach payments in looper-golf with Stripe Connect Express: coach onboarding, destination charges with a 12% application fee, and lesson status sync, building on api/checkout.js.'},
+{id:'c7',ph:'p2',t:'Launch Pro when sniping verifiably works',m:'Cancellation alerts are the willingness-to-pay trigger'},
+{id:'c8',ph:'p2',t:'Adapter contract tests + Playwright smoke suite',m:'Upstream format drift should break CI, not production',p:'Add adapter contract tests with recorded GolfNow/foreUP fixtures and a Playwright smoke suite (browse, deep-link, create alert, post/claim foursome, message) to looper-golf.'},
+{id:'c9',ph:'p2',t:'Gate: 1 platform deal or 3 course MOUs · first $1k MRR',m:'Clear this before the funding decision',g:1},
+{id:'e1',ph:'p3',t:'In-app booking v1 on the signed API agreement',m:'No-auto-booking constraint evolves once a written agreement exists',p:'Design the in-app booking v1 architecture for looper-golf assuming a signed GolfNow affiliate API agreement: booking adapter, checkout flow, and how the no-automated-booking constraint evolves.'},
+{id:'e2',ph:'p3',t:'One-tap group booking for matched players',m:'Host books N spots; money-games IOU + Venmo rail settles',p:'Design and build the one-tap group booking flow in looper-golf: matched players confirm a slot, host books N spots, costs settle via the existing money-games IOU and Venmo rail.'},
+{id:'e3',ph:'p3',t:'B2B v0: demand PDF → paid course dashboard',m:'$99–299/mo pilot with 2–3 design partners'},
+{id:'e4',ph:'p3',t:'Funding decision at the gates',m:'2k MAU · 600 WAU · 500 bookings/wk · 100 Pro subs — raise only if you want venture scale'},
+{id:'e5',ph:'p3',t:'First hire: course-partnerships rep',m:'Commission-only; ex-pro-shop/GM with Houston relationships'},
+{id:'e6',ph:'p3',t:'Scope city #2 (DFW first)',m:'Only after Houston liquidity — density is the moat'}
+];
+let state=null,dragged=null;
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.tasks)return s;}catch(e){}return {tasks:JSON.parse(JSON.stringify(SEED)),collapsed:{},filter:'all'};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+state=load();
+
+const themeBtn=document.getElementById('themeb');
+function applyTheme(){
+  let t='light';
+  try{t=localStorage.getItem('lr-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');}catch(e){}
+  document.documentElement.setAttribute('data-theme',t);
+  themeBtn.innerHTML=(t==='dark'?I.sun:I.moon)+'<span>'+(t==='dark'?'Light':'Dark')+'</span>';
+}
+themeBtn.onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');try{localStorage.setItem('lr-theme',cur==='dark'?'light':'dark');}catch(e){}applyTheme();};
+applyTheme();
+
+function getAfter(list,y){let best={o:-1e9,e:null};list.querySelectorAll('.task:not(.dragging)').forEach(r=>{const b=r.getBoundingClientRect();const o=y-b.top-b.height/2;if(o<0&&o>best.o)best={o:o,e:r}});return best.e;}
+function rebuild(){const arr=[];document.querySelectorAll('[data-ph]').forEach(ul=>{ul.querySelectorAll('.task').forEach(r=>{const t=state.tasks.find(x=>x.id===r.dataset.id);if(t){t.ph=ul.dataset.ph;arr.push(t);}});});state.tasks.forEach(t=>{if(arr.indexOf(t)<0)arr.push(t);});state.tasks=arr;save();render();}
+
+function mkRow(t){
+  const row=document.createElement('div');
+  row.className='task'+(t.done?' done':'')+(t.g?' gate':'');
+  row.dataset.id=t.id;
+  const grip=document.createElement('span');grip.className='grip';grip.innerHTML=I.grip;grip.title='Drag to reorder';
+  grip.addEventListener('mousedown',()=>{row.draggable=true;});
+  row.appendChild(grip);
+  row.addEventListener('dragstart',e=>{dragged=row;e.dataTransfer.setData('text/plain',t.id);e.dataTransfer.effectAllowed='move';setTimeout(()=>row.classList.add('dragging'),0);});
+  row.addEventListener('dragend',()=>{row.classList.remove('dragging');row.draggable=false;dragged=null;rebuild();});
+  const cb=document.createElement('button');cb.className='cb'+(t.done?' on':'');cb.setAttribute('aria-label',t.done?'Mark not done':'Mark done');cb.innerHTML=t.done?I.check:'';
+  cb.onclick=()=>{t.done=!t.done;save();render();};
+  row.appendChild(cb);
+  const mid=document.createElement('div');mid.className='tmid';
+  const flag=t.g?'<span class="gateflag">'+I.flag+'</span>':'';
+  mid.innerHTML='<div class="tt">'+flag+esc(t.t)+'</div>'+(t.m?'<div class="tm">'+esc(t.m)+'</div>':'');
+  row.appendChild(mid);
+  const acts=document.createElement('div');acts.className='tacts';
+  if(t.p){
+    const cp=document.createElement('button');cp.className='copybtn';cp.innerHTML=I.copy+'<span>Prompt</span>';cp.title='Copy a ready-to-paste prompt for Claude Code';
+    cp.onclick=()=>{navigator.clipboard.writeText(t.p).then(()=>{cp.classList.add('copied');cp.innerHTML=I.check+'<span>Copied</span>';setTimeout(()=>{cp.classList.remove('copied');cp.innerHTML=I.copy+'<span>Prompt</span>';},1600);});};
+    acts.appendChild(cp);
+  }
+  const del=document.createElement('button');del.className='iconbtn del';del.setAttribute('aria-label','Remove task');del.innerHTML=I.x;
+  del.onclick=()=>{state.tasks=state.tasks.filter(x=>x.id!==t.id);save();render();};
+  acts.appendChild(del);
+  row.appendChild(acts);
+  return row;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function render(){
+  const root=document.getElementById('phases');root.innerHTML='';
+  const total=state.tasks.length,doneAll=state.tasks.filter(t=>t.done).length;
+  document.getElementById('pct').textContent=(total?Math.round(100*doneAll/total):0)+'%';
+  document.getElementById('pcount').textContent=doneAll+' of '+total+' tasks done';
+  document.getElementById('pfill').style.width=(total?Math.round(100*doneAll/total):0)+'%';
+  ['all','todo','done'].forEach(f=>{document.getElementById('f-'+f).className=(state.filter===f?'on':'');});
+  PHASES.forEach(ph=>{
+    const ts=state.tasks.filter(t=>t.ph===ph.id);
+    const dn=ts.filter(t=>t.done).length;
+    const col=state.collapsed[ph.id];
+    const sec=document.createElement('section');sec.className='phase'+(state.filter!=='all'?' nodrag':'');
+    const hd=document.createElement('div');hd.className='phead'+(col?' closed':'');
+    hd.innerHTML='<span class="chev">'+I.chev+'</span><span class="pname">'+ph.n+'</span><span class="chip" style="background:var(--chip-'+ph.c+'-bg);color:var(--chip-'+ph.c+'-tx);">'+ph.w+'</span><span class="pdone">'+dn+'/'+ts.length+'</span>';
+    hd.onclick=()=>{state.collapsed[ph.id]=!state.collapsed[ph.id];save();render();};
+    sec.appendChild(hd);
+    if(!col){
+      const ul=document.createElement('div');ul.className='plist';ul.dataset.ph=ph.id;
+      ul.addEventListener('dragover',e=>{e.preventDefault();if(!dragged||state.filter!=='all')return;const a=getAfter(ul,e.clientY);if(a)ul.insertBefore(dragged,a);else ul.appendChild(dragged);});
+      let shown=0;
+      ts.forEach(t=>{if(state.filter==='todo'&&t.done)return;if(state.filter==='done'&&!t.done)return;ul.appendChild(mkRow(t));shown++;});
+      if(!shown){const em=document.createElement('div');em.className='empty';em.textContent=state.filter==='all'?'Nothing here — drag tasks in or add one below.':'Nothing matches this filter.';ul.appendChild(em);}
+      sec.appendChild(ul);
+      if(state.filter==='all'){
+        const ar=document.createElement('div');ar.className='addrow';
+        const inp=document.createElement('input');inp.placeholder='Add a task to this phase…';inp.setAttribute('aria-label','Add a task to '+ph.n);
+        const ab=document.createElement('button');ab.className='btn';ab.innerHTML=I.plus;ab.setAttribute('aria-label','Add task');
+        const add=()=>{const v=inp.value.trim();if(!v)return;const nt={id:'u'+Math.floor(Math.random()*1e9),ph:ph.id,t:v,m:''};let idx=-1;for(let i=state.tasks.length-1;i>=0;i--){if(state.tasks[i].ph===ph.id){idx=i;break;}}if(idx<0)state.tasks.push(nt);else state.tasks.splice(idx+1,0,nt);save();render();};
+        ab.onclick=add;inp.addEventListener('keydown',e=>{if(e.key==='Enter')add();});
+        ar.appendChild(inp);ar.appendChild(ab);sec.appendChild(ar);
+      }
+    }
+    root.appendChild(sec);
+  });
+}
+document.getElementById('f-all').onclick=()=>{state.filter='all';save();render();};
+document.getElementById('f-todo').onclick=()=>{state.filter='todo';save();render();};
+document.getElementById('f-done').onclick=()=>{state.filter='done';save();render();};
+let armT=null;
+document.getElementById('resetb').onclick=function(){
+  if(this.dataset.armed){state={tasks:JSON.parse(JSON.stringify(SEED)),collapsed:{},filter:'all'};save();render();delete this.dataset.armed;this.textContent='Reset';}
+  else{this.dataset.armed='1';this.textContent='Confirm reset?';clearTimeout(armT);armT=setTimeout(()=>{delete this.dataset.armed;this.textContent='Reset';},3000);}
+};
+render();
+</script>
+</body>
+</html>
